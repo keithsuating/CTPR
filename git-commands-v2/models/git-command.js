@@ -24,19 +24,38 @@ class GitCommand {
     //Command: git add <filename/file directory/wildcard> 
     add(path_file){
         let modified_files = this.working_directory.new_changes;
-        
+    
+        if (path_file === ".") {
+            for (let file in modified_files) {
+              this.staging.push(modified_files[file]);
+              delete modified_files[file];
+            }
+            return "Successfully added as index file/s.";
+          }
+    
+        if(path_file === "*") {
+            let added = false;
+            for(let file in modified_files) {
+                this.staging.push(modified_files[file]);
+                delete modified_files[file];
+                added = true;
+            }
+            if(added) {
+                return "Successfully added as index file/s.";
+            } else {
+                return `Failed to add ${path_file}! File is not modified or missing.`;
+            }
+        }
+    
         if(modified_files[path_file]){
             this.staging.push(modified_files[path_file]);
             delete modified_files[path_file];
+            return "Successfully added as index file/s.";
         }
-        /*
-            Create logic here then run unit testing. Make sure that they all pass before sending PR.
-        */
-        else{
-            return `Failed to add ${path_file}! File is not modified or missing.`;
-        }
-        return "Successfully added as index file/s.";
+    
+        return `Failed to add ${path_file}! File is not modified or missing.`;
     }
+    
 
     //Command: git commit -m "<message>"
     commit(message){
